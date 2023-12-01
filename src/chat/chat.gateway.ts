@@ -28,12 +28,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     handleConnection(client: Socket) {
         this.connectedClients.push(client)
-        console.log('connected')
     }
 
     handleDisconnect(client: Socket) {
         this.connectedClients.splice(this.connectedClients.indexOf(client), 1);
-        console.log('disconnected')
     }
 
     @SubscribeMessage('messageToServer')
@@ -44,14 +42,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('leaveChat')
     handleLeaveChar(client: Socket, room: string) {
         client.leave(room);
-        console.log("leaving " + room)
         client.emit('leaveRoom', room)
     }
 
     @SubscribeMessage('joinChat')
     handleJoinChat(client: Socket, room: string) {
         client.join(room);
-        console.log("joining " + room)
         client.emit('joinedChat', room)
     }
 }

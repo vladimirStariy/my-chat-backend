@@ -3,7 +3,7 @@ import { User } from "src/user/models/user.model";
 import { ChatRoomUser } from "./chat.room.users";
 
 interface ChatRoomCreationModel {
-
+    id: string;
 }
 
 @Table({tableName: 'chat-rooms'})
