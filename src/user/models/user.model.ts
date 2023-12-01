@@ -22,7 +22,7 @@ export class User extends Model<User, IUserCreationModel> {
     @Column({type: DataType.STRING, unique: true, allowNull: false})
     username: string;
 
-    @Column({type: DataType.STRING, unique: true, allowNull: false})
+    @Column({type: DataType.STRING, unique: true, allowNull: true})
     usertag: string;
 
     @Column({type: DataType.STRING, allowNull: false})

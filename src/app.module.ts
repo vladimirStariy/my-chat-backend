@@ -10,6 +10,7 @@ import { ChatModule } from "./chat/chat.module";
 import { Message } from "./chat/model/message.model";
 import { ChatRoom } from "./chat/model/chat.room.model";
 import { ChatRoomUser } from "./chat/model/chat.room.users";
+import { Friends } from "./profile/model/friend.model";
 
 @Module({
     imports: [
@@ -27,7 +28,8 @@ import { ChatRoomUser } from "./chat/model/chat.room.users";
                 User,
                 ChatRoom,
                 ChatRoomUser,
-                Message
+                Message,
+                Friends
             ],
             autoLoadModels: true
         }),

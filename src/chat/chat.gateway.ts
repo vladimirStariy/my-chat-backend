@@ -28,30 +28,30 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     handleConnection(client: Socket) {
         this.connectedClients.push(client)
+        console.log('connected')
     }
 
     handleDisconnect(client: Socket) {
         this.connectedClients.splice(this.connectedClients.indexOf(client), 1);
+        console.log('disconnected')
     }
 
     @SubscribeMessage('messageToServer')
     handleSendMessage(client: Socket, message: { room: string; text: string;}) {
-        console.log("text to client " + message.text)
-        this.connectedClients.forEach(x => {x.emit('messageToServer', message.text)})
-        this.server.to(message.room).emit('messageToServer', message.text)
+        this.server.to(message.room).emit('messageToServer', {message: message.text, client: client.id})
     }
 
     @SubscribeMessage('leaveChat')
     handleLeaveChar(client: Socket, room: string) {
         client.leave(room);
-        console.log('leaved')
+        console.log("leaving " + room)
         client.emit('leaveRoom', room)
     }
 
     @SubscribeMessage('joinChat')
     handleJoinChat(client: Socket, room: string) {
         client.join(room);
-        console.log('joined')
+        console.log("joining " + room)
         client.emit('joinedChat', room)
     }
 }

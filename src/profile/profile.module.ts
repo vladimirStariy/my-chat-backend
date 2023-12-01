@@ -4,6 +4,7 @@ import { ProfileController } from './profile.controller';
 import { ProfileService } from './profile.service';
 import { AuthModule } from 'src/auth/auth.module';
 import { UserModule } from 'src/user/user.module';
+import { Friends } from './model/friend.model';
 
 @Module({
   controllers: [ProfileController],
@@ -11,7 +12,7 @@ import { UserModule } from 'src/user/user.module';
   imports: [
     forwardRef(() => AuthModule),
     forwardRef(() => UserModule),
-    SequelizeModule.forFeature([]),
+    SequelizeModule.forFeature([Friends]),
   ],
   exports: [
     ProfileService

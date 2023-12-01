@@ -1,4 +1,4 @@
-import { HttpException, ConflictException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, ConflictException, HttpStatus, Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from 'bcryptjs'
@@ -45,6 +45,7 @@ export class AuthService {
     async validateUser(loginDto: LoginDto) {
         try {
             const user = await this.userService.getByEmail(loginDto.email);
+            if(!user) new NotFoundException({message: "Invalid email"})
             if(user.isBanned) new UnauthorizedException({message: 'User is banned'});
             const passwordEquals = await bcrypt.compare(loginDto.password, user.password);
             if(!passwordEquals) throw new UnauthorizedException({message: 'Invalid password'});

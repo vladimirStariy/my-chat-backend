@@ -7,4 +7,18 @@ export class ProfileController {
 
     constructor(private profileService: ProfileService) {}
 
+    @Post('/add-friend')
+    async addFriend() {
+        
+    }
+
+    @Post('/accept-friend')
+    async acceptFriend() {
+
+    }
+
+    @Post('/reject-friend')
+    async rejectFriend() {
+
+    }
 }
