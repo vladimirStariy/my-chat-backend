@@ -17,7 +17,7 @@ export class ChatService {
         @InjectModel(ChatRoom) private chatRoomRepository: typeof ChatRoom
     ) {}
 
-    async createRoom() {
+    async get() {
         
     }
 

@@ -13,39 +13,38 @@ import { ChatRoomUser } from "./chat/model/chat.room.users";
 import { Friends } from "./profile/model/friend.model";
 
 @Module({
-    imports: [
-        ConfigModule.forRoot({
-            envFilePath: '.env'
-        }),
-        SequelizeModule.forRoot({
-            dialect: 'mysql',
-            host: process.env.MYSQL_HOST,
-            port: Number(process.env.MYSQL_PORT),
-            username: process.env.MYSQL_USER,
-            password: process.env.MYSQL_PASSWORD,
-            database: process.env.MYSQL_DB,
-            models: [
-                User,
-                ChatRoom,
-                ChatRoomUser,
-                Message,
-                Friends
-            ],
-            autoLoadModels: true
-        }),
-        GoogleDriveModule.register({
-            clientId: '593131673474-b5lnt6kfvhvb3758n88ncfkm1pb79gv7.apps.googleusercontent.com',
-            clientSecret: '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',
-            redirectUrl: 'https://developers.google.com/oauthplayground',
-            refreshToken: '1//0408XWH79EkOcCgYIARAAGAQSNwF-L9IrjrrWQj8yCM1bkCBAkG6bgUZ_ttP7QYgpiwevRWim1alRGjfFkP7odO13T0XYznPf84Q',
-        }),
-        UserModule,
-        AuthModule,
-        ProfileModule,
-        ChatModule
-    ],
-    controllers: [],
-    providers: [ChatModule]
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: '.env'
+    }),
+    SequelizeModule.forRoot({
+      dialect: 'mysql',
+      host: process.env.MYSQL_HOST,
+      port: Number(process.env.MYSQL_PORT),
+      username: process.env.MYSQL_USER,
+      password: process.env.MYSQL_PASSWORD,
+      database: process.env.MYSQL_DB,
+      models: [
+        User,
+        ChatRoom,
+        ChatRoomUser,
+        Message,
+        Friends
+      ],
+      autoLoadModels: true
+    }),
+    GoogleDriveModule.register({
+      clientId: '593131673474-b5lnt6kfvhvb3758n88ncfkm1pb79gv7.apps.googleusercontent.com',
+      clientSecret: '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',
+      redirectUrl: 'https://developers.google.com/oauthplayground',
+      refreshToken: '1//0408XWH79EkOcCgYIARAAGAQSNwF-L9IrjrrWQj8yCM1bkCBAkG6bgUZ_ttP7QYgpiwevRWim1alRGjfFkP7odO13T0XYznPf84Q',
+    }),
+    UserModule,
+    AuthModule,
+    ProfileModule,
+    ChatModule
+  ],
+  controllers: [],
+  providers: [ChatModule]
 })
-
 export class AppModule {}
