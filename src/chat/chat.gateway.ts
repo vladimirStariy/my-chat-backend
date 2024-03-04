@@ -13,7 +13,6 @@ import {
 import { Socket, Server } from 'socket.io'
 import { SocketExceptionsFilter } from "src/auth/filters/ws.exception.filter";
 import { SocketUserGuard } from "src/auth/guards/socket.user.guard";
-import { UserService } from "src/user/user.service";
 
 export interface CommentPayload {
   userId: number;
@@ -24,6 +23,7 @@ export interface CommentPayload {
   cors: true,
   namespace: '/chat'
 })
+@UseFilters(SocketExceptionsFilter)
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor() {}
 

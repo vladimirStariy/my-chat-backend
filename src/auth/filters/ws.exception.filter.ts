@@ -1,10 +1,15 @@
 import { Catch, ArgumentsHost } from '@nestjs/common';
 import { BaseWsExceptionFilter } from '@nestjs/websockets';
+import { Socket } from 'socket.io'
 
 @Catch()
 export class SocketExceptionsFilter extends BaseWsExceptionFilter {
-    catch(exception: unknown, host: ArgumentsHost) {
-        super.catch(exception, host);
-        return exception;
-    }
+  catch(exception: any, host: ArgumentsHost) {
+    const client = host.switchToWs().getClient() as Socket;
+    console.log(client.id)
+    client.emit('error', {
+      exception: exception.name,
+      status: exception.status
+    });
+  }
 }
