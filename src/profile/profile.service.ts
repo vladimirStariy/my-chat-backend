@@ -8,6 +8,8 @@ import { ChatRoomUser } from 'src/chat/model/chat.room.users';
 import { GetFriendsRoomsDto } from './dto/room.dto';
 import { FriendRequestDto, MyFriendsRequestDto } from './dto/add.friend.dto';
 import { Op } from 'sequelize';
+import { ProfileDto } from './dto/profile.dto';
+import { FriendDto } from './dto/friend.dto';
 
 @Injectable()
 export class ProfileService {
@@ -17,6 +19,51 @@ export class ProfileService {
     @InjectModel(ChatRoomUser) private chatRoomUserRepository: typeof ChatRoomUser,
     private userService: UserService
   ) {}
+  async getProfile(
+    userId: number
+  ): Promise<ProfileDto> {
+    try {
+      const user = await this.userService.getById(userId);
+      return {
+        usertag: user.usertag,
+        username: user.username
+      } as ProfileDto
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  }
+  async getFriends(
+    userId: number
+  ): Promise<FriendDto[]> {
+    try {
+      const rawFriends = await this.friendsRepository.findAll({
+        where: { 
+          userId: userId, 
+          status: 1 
+        }
+      });
+      const friends: FriendDto[] = [];
+      await Promise.all(
+        rawFriends.map(async (item) => {
+          const friend = await this.userService.getById(item.friendId);
+          const roomsId = await this.chatRoomUserRepository.findAll({
+            where: {
+              userId: [userId, friend.id]
+            },
+          })
+          friends.push({
+            friendId: friend.id,
+            username: friend.username,
+            usertag: friend.usertag,
+            roomId: roomsId[0].chatRoomId
+          })
+        })
+      )
+      return friends;
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  }
   async addFriend(friendRequester: number, friendUsertag: string) {
     const user = await this.userService.getByUsertag(friendUsertag);
     if(!user) throw new NotFoundException("User with that usertag doesnt exist");
@@ -57,23 +104,6 @@ export class ProfileService {
     const friendUsers = await this.userService.getUsersRange(friendsIds);
     const friendDto = friendUsers.map((item) => { return { usertag: item.usertag, name: item.username } });
     return friendDto;
-  }
-  async getFriends(userId: number) {
-    const friends = await this.friendsRepository.findAll({ 
-      where: {
-        [Op.or]: [{userId: userId}, {friendId: userId}], 
-        status: 1
-      }
-    });
-    let userIds = friends.map((item) => { if(item.friendId === userId) { return item.userId } else return item.friendId });
-    const friendsUsers = await this.userService.getUsersRange(userIds);
-    const chatUserRooms = await this.chatRoomUserRepository.findAll({ where: { userId: userId } });
-    const chatRoomsIds = chatUserRooms.map((item) => { return item.chatRoomId})
-    const chatRooms = await this.chatRoomRepository.findAll({ where: { id: chatRoomsIds }, include: { model: ChatRoomUser } });
-    chatRooms.map((chatRoom) => {
-      chatRoom.users.map((chatRoomUser) => {     
-      })
-    })
   }
   private generateUUID(): string {
     return uuidv4();

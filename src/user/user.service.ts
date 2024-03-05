@@ -39,8 +39,9 @@ export class UserService {
     const user = await this.userRepository.findOne({where: {email: email}, include: {all: true}})
     return user;
   }
-  async getById(id: number) {
+  async getById(id: number): Promise<User> {
     const user = await this.userRepository.findOne({where: {id: id}});
+    if(!user) throw new Error("User not found");
     return user;
   }
   async getUsersRange(ids: number[]) {

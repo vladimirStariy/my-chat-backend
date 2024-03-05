@@ -20,6 +20,8 @@ export class SocketUserGuard implements CanActivate {
         const user = await this.userService.getByEmail(valid.email);
         if(!user) throw new UnauthorizedException({message: 'Unauthorized'});
         if(user.isBanned) throw new UnauthorizedException({message: 'You are banned'})
+        context.args[0].handshake.headers.userId = user.id;
+        context.args[0].handshake.headers.userName = user.username;
       }
       return true;
     } catch (e) {
