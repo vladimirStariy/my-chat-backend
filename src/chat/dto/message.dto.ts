@@ -8,5 +8,6 @@ export interface IMessages {
   id: number;
   text: string;
   userId: number;
+  usertag: string;
   messageDate: Date;
 }

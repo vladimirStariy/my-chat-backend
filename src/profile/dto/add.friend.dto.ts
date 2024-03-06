@@ -1,4 +1,4 @@
-export interface AddFriendDto {
+export class AddFriendDto {
   usertag: string;
 }
 export interface AcceptFriendDto {

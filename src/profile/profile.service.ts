@@ -8,7 +8,7 @@ import { ChatRoomUser } from 'src/chat/model/chat.room.users';
 import { GetFriendsRoomsDto } from './dto/room.dto';
 import { FriendRequestDto, MyFriendsRequestDto } from './dto/add.friend.dto';
 import { Op } from 'sequelize';
-import { ProfileDto } from './dto/profile.dto';
+import { ProfileDto, SearchProfileDto } from './dto/profile.dto';
 import { FriendDto } from './dto/friend.dto';
 
 @Injectable()
@@ -38,24 +38,36 @@ export class ProfileService {
     try {
       const rawFriends = await this.friendsRepository.findAll({
         where: { 
-          userId: userId, 
+          [Op.or]: [{userId: userId}, {friendId: userId}],
           status: 1 
         }
       });
       const friends: FriendDto[] = [];
       await Promise.all(
         rawFriends.map(async (item) => {
-          const friend = await this.userService.getById(item.friendId);
+          let friend: any;
+          if(userId === item.userId) friend = await this.userService.getById(item.friendId);
+          if(userId === item.friendId) friend = await this.userService.getById(item.userId);
           const roomsId = await this.chatRoomUserRepository.findAll({
             where: {
               userId: [userId, friend.id]
             },
           })
+          let roomId: string = "";
+          roomsId.map((item) => {
+            if(roomId === item.chatRoomId) {
+              return roomId;
+            }
+            if(item.userId === friend.id) {
+              roomId = item.chatRoomId
+            }
+          })
+          console.log(roomId)
           friends.push({
             friendId: friend.id,
             username: friend.username,
             usertag: friend.usertag,
-            roomId: roomsId[0].chatRoomId
+            roomId: roomId
           })
         })
       )
@@ -64,18 +76,45 @@ export class ProfileService {
       throw new Error(e.message);
     }
   }
-  async addFriend(friendRequester: number, friendUsertag: string) {
-    const user = await this.userService.getByUsertag(friendUsertag);
-    if(!user) throw new NotFoundException("User with that usertag doesnt exist");
-    const exist = await this.friendsRepository.findOne({where: {userId: friendRequester, friendId: user.id}});
-    if(exist) throw new ConflictException({message: "User already invited to friends"})
-    await this.friendsRepository.create({
-      userId: friendRequester,
-      friendId: user.id,
-      status: 0
-    });
-    return 'Success'
+  async addFriend(
+    friendRequester: number, 
+    friendUsertag: string
+  ): Promise<string> {
+    try {
+      const user = await this.userService.getByUsertag(friendUsertag);
+      if(!user) throw new Error("User with that usertag doesnt exist");
+      const exist = await this.friendsRepository.findOne({where: {userId: friendRequester, friendId: user.id}});
+      if(exist) throw new Error("User already invited to friends");
+      await this.friendsRepository.create({
+        userId: friendRequester,
+        friendId: user.id,
+        status: 0
+      });
+      return "User succesfully invited"
+    } catch(e) {
+      throw new Error(e.message);
+    }
   }
+  
+  async searchProfileByUsertag(
+    usertag: string
+  ): Promise<SearchProfileDto> {
+    try {
+      const user = await this.userService.getByUsertag(usertag);
+      if(!user) throw new Error("User with that usertag doesnt exist");
+      const userProfile: SearchProfileDto = {
+        username: user.username,
+        usertag: user.usertag
+      }
+      return userProfile;
+    } catch(e) {
+      throw new Error(e.message);
+    }
+  }
+
+
+
+
   async acceptFriendRequest(usertag: string, acceptorId: number) {
     const friend = await this.userService.getByUsertag(usertag);
     const friendRecord = await this.friendsRepository.findOne({ where: { friendId: acceptorId, userId: friend.id } })

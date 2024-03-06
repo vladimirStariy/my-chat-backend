@@ -10,15 +10,17 @@ export class ChatController {
   constructor(
     private chatService: ChatService
   ) {}
+  @UseGuards(JwtAuthGuard)
   @Get('messages')
   async chatMessages(
     @Query('chatRoomId') chatRoomId: string,
     @Query('page') page: number,
     @Query('limit') limit: number,
+    @Req() request: any,
     @Res() response: Response
   ):Promise<Response> {
     try {
-      const messages = await this.chatService.getChatMessages(chatRoomId, page, limit);
+      const messages = await this.chatService.getChatMessages(chatRoomId, request.user.usertag, page, limit);
       return response.status(HttpStatus.OK).json(messages);
     } catch(e) {
       if (e instanceof Error) {

@@ -27,7 +27,7 @@ export class JwtAuthGuard implements CanActivate {
             if(valid) {
                 const user = await this.userService.getByEmail(valid.email);
                 if(user.isBanned) throw new UnauthorizedException({message: 'Banned'})
-                req.user = {email: user.email, userId: user.id}
+                req.user = {email: user.email, userId: user.id, usertag: user.usertag}
                 if (!requiredRoles) {
                     return true;
                 } else {
