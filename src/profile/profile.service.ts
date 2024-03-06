@@ -81,6 +81,7 @@ export class ProfileService {
     friendUsertag: string
   ): Promise<string> {
     try {
+      console.log(friendUsertag);
       const user = await this.userService.getByUsertag(friendUsertag);
       if(!user) throw new Error("User with that usertag doesnt exist");
       const exist = await this.friendsRepository.findOne({where: {userId: friendRequester, friendId: user.id}});

@@ -20,7 +20,7 @@ export class ChatController {
     @Res() response: Response
   ):Promise<Response> {
     try {
-      const messages = await this.chatService.getChatMessages(chatRoomId, request.user.usertag, page, limit);
+      const messages = await this.chatService.getChatMessages(chatRoomId, request.user.userId, page, limit);
       return response.status(HttpStatus.OK).json(messages);
     } catch(e) {
       if (e instanceof Error) {

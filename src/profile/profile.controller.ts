@@ -51,7 +51,7 @@ export class ProfileController {
     @Res() response: Response
   ): Promise<Response> {
     try {
-      const resp = await this.profileService.addFriend(request.user.userId, friendUsertag.friendUsertag);
+      const resp = await this.profileService.addFriend(request.user.userId, friendUsertag.usertag.friendUsertag);
       return response.status(HttpStatus.OK).json(resp);
     } catch(e) {
       if (e instanceof Error) {
