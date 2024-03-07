@@ -12,7 +12,7 @@ export class AuthController {
   ) {}
   @Post('login')
   async login(
-    @Res({passthrough: true}) response: Response, 
+    @Res() response: Response, 
     @Body() loginDto: LoginDto
   ): Promise<Response> {
     try {
@@ -22,7 +22,7 @@ export class AuthController {
         secure: true,
         sameSite: 'none'
       });
-      return response.status(HttpStatus.OK).json({access: pairTokens.accessToken});
+      return response.status(HttpStatus.OK).json(pairTokens.accessToken);
     } catch(e) {
       if (e instanceof Error) {
         return response.status(HttpStatus.BAD_REQUEST).json(e.message);
@@ -46,7 +46,7 @@ export class AuthController {
   @Get('refresh')
   async refresh(
     @Req() request: Request, 
-    @Res({ passthrough:true }) response: Response
+    @Res() response: Response
   ): Promise<Response> {
     try {
       const pairTokens = await this.authService.refresh(request.cookies['refreshToken']);
@@ -55,17 +55,17 @@ export class AuthController {
         secure: true,
         sameSite: 'none'
       });
-      return response.status(HttpStatus.OK).json({access: pairTokens.accessToken});
+      return response.status(HttpStatus.OK).json(pairTokens.accessToken);
     } catch(e) {
       if (e instanceof Error) {
         return response.status(HttpStatus.BAD_REQUEST).json(e.message);
       }
     }
   }
-  @Get('logout')
+  @Post('logout')
   async logout(
-    @Res({ passthrough: true }) response: Response
-  ): Promise<Response> {
+    @Res({passthrough: true}) response: Response
+  ) {
     try {
       response.clearCookie('refreshToken', {
         httpOnly: true,

@@ -9,23 +9,21 @@ export class SocketUserGuard implements CanActivate {
     private userService: UserService
   ) {}
   async canActivate(context: any): Promise<boolean> {
-    const authHeader = context.args[0].handshake.headers.authorization;
+    const authHeader = context.args[1].token;
     try {
-      if(authHeader === null || authHeader === '') throw new UnauthorizedException({message: 'Unauthorized'})
-      const bearer = authHeader.split(' ')[0]
-      const token = authHeader.split(' ')[1]
-      if (bearer !== 'Bearer' || !token) throw new UnauthorizedException({message: 'Unauthorized'})
-      const valid = this.jwtService.verify(token);
+      if(authHeader === null || authHeader === '') throw new UnauthorizedException('Unauthorized')
+      if (!authHeader) throw new UnauthorizedException('Unauthorized')
+      const valid = this.jwtService.verify(authHeader);
       if(valid) {
         const user = await this.userService.getByEmail(valid.email);
-        if(!user) throw new UnauthorizedException({message: 'Unauthorized'});
-        if(user.isBanned) throw new UnauthorizedException({message: 'You are banned'})
+        if(!user) throw new UnauthorizedException('Unauthorized');
+        if(user.isBanned) throw new UnauthorizedException('You are banned')
         context.args[0].handshake.headers.userId = user.id;
         context.args[0].handshake.headers.userName = user.username;
       }
       return true;
     } catch (e) {
-      throw new UnauthorizedException({message: 'Unauthorized'})
+      throw new UnauthorizedException('Unauthorized')
     }
   }
 }

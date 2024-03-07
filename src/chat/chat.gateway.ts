@@ -27,16 +27,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
   private connectedClients: Socket[] = [];
   handleConnection(client: Socket) { 
-    console.log("connected");
     this.connectedClients.push(client)
-
   }
   handleDisconnect(client: Socket) { this.connectedClients.splice(this.connectedClients.indexOf(client), 1) }
   
-
   @UseGuards(SocketUserGuard)
   @SubscribeMessage('messageToServer')
   async handleSendMessage(client: Socket, message: { room: string; text: string;}) {
+    console.log(message);
     await this.chatService.sendMessage(Number(client.handshake.headers.userId), message.room, message.text);
     await this.server.to(message.room).emit('messageToServer', {
       message: message.text, 
@@ -44,6 +42,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       userId: Number(client.handshake.headers.userId),
       username: client.handshake.headers.userName.toString()
     })
+    console.log('im worked')
   }
   @UseGuards(SocketUserGuard)
   @SubscribeMessage('leaveChat')
